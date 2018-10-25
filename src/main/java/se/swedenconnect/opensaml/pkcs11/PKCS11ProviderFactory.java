@@ -69,7 +69,7 @@ public class PKCS11ProviderFactory {
     
     if (PKCS11SoftHsmProviderConfiguration.class.isInstance(this.configuration)) {
       PKCS11SoftHsmProviderConfiguration softHsmConfig = PKCS11SoftHsmProviderConfiguration.class.cast(this.configuration);
-      if (softHsmConfig.getKeyLocation() != null && softHsmConfig.getPin() != null) {
+      if (softHsmConfig.getCredentialConfigurationList() != null && softHsmConfig.getPin() != null) {
         log.info("Found PKCS11 configuration for SoftHSM");
         return new PKCS11SoftHsmProvider(softHsmConfig);
       }
