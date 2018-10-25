@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.opensaml.pkcs11.impl;
+package se.swedenconnect.opensaml.pkcs11.providerimpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.swedenconnect.opensaml.pkcs11.PKCS11ProvidedCfgConfiguration;
+import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProvidedCfgConfiguration;
 import se.swedenconnect.opensaml.pkcs11.PKCS11Provider;
 import sun.security.pkcs11.SunPKCS11;
 

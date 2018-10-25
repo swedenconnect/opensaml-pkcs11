@@ -1,9 +1,10 @@
 package se.swedenconnect.opensaml.pkcs11;
 
 import org.junit.Test;
-import se.swedenconnect.opensaml.pkcs11.impl.GenericPKCS11Provider;
-import se.swedenconnect.opensaml.pkcs11.impl.PKCS11NullProvider;
-import se.swedenconnect.opensaml.pkcs11.impl.PKCS11SoftHsmProvider;
+import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.GenericPKCS11Provider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11NullProvider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11SoftHsmProvider;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -16,7 +17,7 @@ public class PKCS11Test {
 
         PKCS11SoftHsmProviderConfiguration mockConfig = mock(PKCS11SoftHsmProviderConfiguration.class);
 
-        //Test null configuration creates null provider
+        //Test null configuration creates null providerimpl
         assertTrue(new PKCS11ProviderFactory(mockConfig).createInstance() instanceof PKCS11NullProvider);
 
         //Test that lib is required

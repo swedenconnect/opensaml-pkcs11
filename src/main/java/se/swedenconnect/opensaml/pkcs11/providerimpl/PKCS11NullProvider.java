@@ -1,4 +1,4 @@
-package se.swedenconnect.opensaml.pkcs11.impl;
+package se.swedenconnect.opensaml.pkcs11.providerimpl;
 
 import se.swedenconnect.opensaml.pkcs11.PKCS11Provider;
 

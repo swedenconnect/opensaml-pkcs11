@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.opensaml.pkcs11.impl;
+package se.swedenconnect.opensaml.pkcs11.credential;
 
 import org.opensaml.security.x509.BasicX509Credential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.swedenconnect.opensaml.pkcs11.PKCS11Credential;
 
 import java.io.IOException;
 import java.security.*;

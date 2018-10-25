@@ -18,10 +18,13 @@ package se.swedenconnect.opensaml.pkcs11;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.swedenconnect.opensaml.pkcs11.impl.GenericPKCS11Provider;
-import se.swedenconnect.opensaml.pkcs11.impl.PKCS11NullProvider;
-import se.swedenconnect.opensaml.pkcs11.impl.PKCS11SoftHsmProvider;
-import se.swedenconnect.opensaml.pkcs11.impl.PKCS11ExternalCfgProvider;
+import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProvidedCfgConfiguration;
+import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProviderConfiguration;
+import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.GenericPKCS11Provider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11NullProvider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11SoftHsmProvider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11ExternalCfgProvider;
 
 /**
  * Factory class for creating an instance of a PKCS11 provider based on provided configuration data.
