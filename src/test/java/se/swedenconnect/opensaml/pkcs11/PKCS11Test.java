@@ -2,9 +2,12 @@ package se.swedenconnect.opensaml.pkcs11;
 
 import org.junit.Test;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
+import se.swedenconnect.opensaml.pkcs11.configuration.SoftHsmCredentialConfiguration;
 import se.swedenconnect.opensaml.pkcs11.providerimpl.GenericPKCS11Provider;
 import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11NullProvider;
 import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11SoftHsmProvider;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -31,7 +34,7 @@ public class PKCS11Test {
         when(mockConfig.getName()).thenReturn("Name");
         assertTrue(new PKCS11ProviderFactory(mockConfig).createInstance() instanceof GenericPKCS11Provider);
 
-        when(mockConfig.getKeyLocation()).thenReturn("/some-place-Er8/i879okLikjUy73/keyFiles");
+        when(mockConfig.getCredentialConfigurationList()).thenReturn(Arrays.asList(new SoftHsmCredentialConfiguration("test","test","test")));
         when(mockConfig.getPin()).thenReturn("1234");
         assertTrue(new PKCS11ProviderFactory(mockConfig).createInstance() instanceof PKCS11SoftHsmProvider);
     }
