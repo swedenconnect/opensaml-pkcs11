@@ -31,8 +31,8 @@ import java.util.List;
  * This is a simplified extension of the PKCS11Credential class, which do not attempt to reload the key in case the
  * connection to the key in the PKCS"11 token has been disrupted or lost.
  *
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 public class PKCS11NoTestCredential extends PKCS11Credential {
 

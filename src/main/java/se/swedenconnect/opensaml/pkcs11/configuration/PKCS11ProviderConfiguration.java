@@ -23,9 +23,9 @@ import se.swedenconnect.opensaml.pkcs11.utils.StringUtils;
  * It is recommended to supply either slot (number) or slotListIndex, but not both, since if the index and slot supplied
  * does not match the device's view an error will occur.
  * </p>
- * 
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ *
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 public class PKCS11ProviderConfiguration {
 

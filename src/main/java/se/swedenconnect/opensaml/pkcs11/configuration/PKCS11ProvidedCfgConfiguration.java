@@ -19,6 +19,9 @@ import java.util.List;
 
 /**
  * Configuration object for setting up PKCS#11 providers based on external cfg file.
+ *
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)*
  */
 public class PKCS11ProvidedCfgConfiguration extends PKCS11ProviderConfiguration {
 

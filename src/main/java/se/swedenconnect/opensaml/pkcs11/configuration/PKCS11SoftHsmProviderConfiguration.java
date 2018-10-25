@@ -17,38 +17,41 @@ package se.swedenconnect.opensaml.pkcs11.configuration;
 
 import se.swedenconnect.opensaml.pkcs11.utils.StringUtils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Configuration class for setting up SoftHSM.
- * 
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ *
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 public class PKCS11SoftHsmProviderConfiguration extends PKCS11ProviderConfiguration {
 
   /** The location of the keys and certificates that the provider should load. */
-  private String keyLocation;
+  private List<SoftHsmCredentialConfiguration> credentialConfigurationList;
 
   /** The PIN to unlock the private key. */
   private String pin;
 
   /**
-   * Returns the directory containing the keys and certificates that should be loaded by the SoftHSM provider.
+   * Returns the cofniguration data for keys and certificates that should be loaded by the SoftHSM provider.
    * 
-   * @return directory
+   * @return List of soft HSM credential configurations
    */
-  public String getKeyLocation() {
-    return this.keyLocation;
+  public List<SoftHsmCredentialConfiguration> getCredentialConfigurationList() {
+    return credentialConfigurationList;
   }
 
   /**
    * Assigns the directory containing the keys and certificates that should be loaded by the SoftHSM provider.
    * 
-   * @param keyLocation
-   *          directory
+   * @param credentialConfigurationList List of soft HSM credential configurations
    */
-  public void setKeyLocation(String keyLocation) {
-    this.keyLocation = StringUtils.getTrimmedIfNotNull(keyLocation);
+  public void setCredentialConfigurationList(List<SoftHsmCredentialConfiguration> credentialConfigurationList) {
+    this.credentialConfigurationList = credentialConfigurationList;
   }
+
 
   /**
    * Returns the PIN needed to write the key.
@@ -72,7 +75,7 @@ public class PKCS11SoftHsmProviderConfiguration extends PKCS11ProviderConfigurat
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return String.format("%s, keyLocation='%s', pin='*****'", super.toString(), this.keyLocation);
+    return String.format("%s, keyLocation='%s', pin='*****'", super.toString(), String.join(", ", credentialConfigurationList.stream().map(sc -> sc.toString()).collect(Collectors.toList())));
   }
 
 }

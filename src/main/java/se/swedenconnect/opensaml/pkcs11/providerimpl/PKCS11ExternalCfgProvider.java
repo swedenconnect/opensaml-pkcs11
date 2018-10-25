@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * PKCS#11 provider for the case when provider configuration is provided as external files.
  *
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 @SuppressWarnings("restriction")
 public class PKCS11ExternalCfgProvider implements PKCS11Provider {

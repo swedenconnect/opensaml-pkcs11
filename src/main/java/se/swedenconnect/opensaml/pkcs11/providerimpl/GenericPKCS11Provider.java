@@ -34,8 +34,8 @@ import sun.security.pkcs11.SunPKCS11;
 /**
  * PKCS#11 provider for the general case.
  *
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 @SuppressWarnings("restriction")
 public class GenericPKCS11Provider implements PKCS11Provider {

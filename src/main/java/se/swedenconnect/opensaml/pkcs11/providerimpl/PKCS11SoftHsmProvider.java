@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.swedenconnect.opensaml.pkcs11.PKCS11Provider;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
+import se.swedenconnect.opensaml.pkcs11.configuration.SoftHsmCredentialConfiguration;
 import sun.security.pkcs11.SunPKCS11;
 
 import java.io.*;
@@ -58,9 +59,9 @@ import java.util.stream.Collectors;
  * <li>Lists of aliases of successfully imported keys and certificates</li>
  * <li>A Map of certificates imported</li>
  * </ul>
- * 
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ *
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 @SuppressWarnings("restriction")
 public class PKCS11SoftHsmProvider implements PKCS11Provider {
@@ -83,13 +84,11 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
     /** PKCS#11 provider instance name. Is the name set as name parameter in the SunPKCS11 provider configuration. */
     String name;
     
-    /** Location of keys and certificates. */
-    String keyLocation;
-    
     /** All aliases. */
     List<String> aliasList;
-    
-    File slotDir;
+
+    /** Map of soft hsm credential configurations under its alias as key */
+    Map<String, SoftHsmCredentialConfiguration> credentialConfigurationMap;
     
     /** The configuration provider name - SunPKCS11-<slot-name>. */
     String providerName;
@@ -100,13 +99,12 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
     /**
      * The constructor checks the specified key folder and forms a list of aliases of keys that can be imported.
      *
-     * @param keyLocation The location of the keys and certificates
-     * @param name    The name of this provider instance that will be used also as label of the slot
-     * @param lib         The PKCS11 library location on the host
-     * @param pin         The soft HSM PIN
+     * @param credentialConfigurationList Configuration data credentials to be loaded into Soft HSM.
+     * @param name The name of this provider instance that will be used also as label of the slot
+     * @param lib The PKCS11 library location on the host
+     * @param pin The soft HSM PIN
      */
-    public PKCS11SoftHsmProvider(String keyLocation, String name, String lib, String pin) {
-        this.keyLocation = keyLocation;
+    public PKCS11SoftHsmProvider(List<SoftHsmCredentialConfiguration> credentialConfigurationList, String name, String lib, String pin) {
         this.name = name.trim().replaceAll("\\s", "");
         this.lib = lib;
         this.pin = pin;
@@ -115,32 +113,23 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
         this.providerName = SUN_PROVIDER_PREFIX + this.name;
         this.certificateMap = new HashMap<>();
 
-        if (keyLocation != null) {
-            this.slotDir = new File(keyLocation);
-        }
-        if (this.slotDir == null || !this.slotDir.canRead()) {
+        if (credentialConfigurationList != null || credentialConfigurationList.isEmpty()) {
             return;
         }
 
-        // Extract the list of key files
-        File[] keyFiles = slotDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".key");
-            }
-        });
+        this.credentialConfigurationMap = new HashMap<>();
 
         // Extract the alias name from the key file and check that there is a corresponding certificate file to form
         // The list of available aliases.
-        aliasList = Arrays.stream(keyFiles)
-                .map(file -> {
-                    String fileNamename = file.getName();
-                    String alias = fileNamename.substring(0, fileNamename.lastIndexOf("."));
-                    File certFile = new File(slotDir, alias + ".crt");
+        aliasList = credentialConfigurationList.stream()
+                .map(cc -> {
+                    String alias = cc.getName();
+                    File certFile = new File(cc.getCertLocation());
                     if (certFile.canRead()) {
                         try {
                             X509Certificate cert = getCert(certFile);
                             certificateMap.put(alias, cert);
+                            credentialConfigurationMap.put(alias,cc);
                             return alias;
                         } catch (Exception ex) {
                             LOG.error("Specified certificate file could not be parsed for alias: {}", alias);
@@ -165,7 +154,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
     }
     
     public PKCS11SoftHsmProvider(PKCS11SoftHsmProviderConfiguration configuration) {
-      this(configuration.getKeyLocation(), configuration.getName(), configuration.getLibrary(), configuration.getPin());
+      this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin());
     }
 
     /**
@@ -175,10 +164,9 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
         initKeySlot(0, name);
         for (int keyIndex = 0; keyIndex < aliasList.size(); keyIndex++) {
             String alias = aliasList.get(keyIndex);
-            File keyFile = new File(slotDir, alias + ".key");
-            File certFile = new File(slotDir, alias + ".crt");
+            SoftHsmCredentialConfiguration credentialConfiguration = credentialConfigurationMap.get(alias);
             String id = new BigInteger("aaaa", 16).add(new BigInteger(String.valueOf(keyIndex))).toString(16);
-            initKey(keyFile.getAbsolutePath(), certFile.getAbsolutePath(), alias, id);
+            initKey(credentialConfiguration.getKeyLocation(), credentialConfiguration.getCertLocation(), alias, id);
         }
     }
 

@@ -19,9 +19,9 @@ import java.util.List;
 
 /**
  * Marker interface for a PKCS#11 provider.
- * 
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ *
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 public interface PKCS11Provider {
 

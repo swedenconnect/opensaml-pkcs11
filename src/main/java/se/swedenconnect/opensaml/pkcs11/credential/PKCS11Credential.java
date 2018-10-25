@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
  * Each time the private key is read from this credential, the private key reference is tested. If the private key can
  * not be used, an attempt to reload the key is made.
  *
- * @author Stefan Santesson (stefan@aaa-sec.com)
- * @author Martin Lindström (martin.lindstrom@litsec.se)
+ * @author Stefan Santesson (stefan@idsec.se)
+ * @author Martin Lindström (martin@idsec.se)
  */
 public class PKCS11Credential extends BasicX509Credential {
 
