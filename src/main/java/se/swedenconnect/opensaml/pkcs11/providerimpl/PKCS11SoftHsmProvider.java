@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * to the soft hsm so it can be imported to a key store under the specified alias.</li>
  * </ul>
  * <p>
- * In order to make its keys available to the Java keystore under a specified alias, the soft HSM must 
+ * In order to make its keys available to the Java keystore under a specified alias, the soft HSM must
  * import both the private key and the certificate under the same ID and label.
  * </p>
  * <p>
@@ -66,43 +66,63 @@ import java.util.stream.Collectors;
 @SuppressWarnings("restriction")
 public class PKCS11SoftHsmProvider implements PKCS11Provider {
 
-    /** Class logger. */
+    /**
+     * Class logger.
+     */
     private final Logger LOG = LoggerFactory.getLogger(PKCS11SoftHsmProvider.class);
-    
-    /** Random number generator. */
+
+    /**
+     * Random number generator.
+     */
     private static final Random rnd = new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes());
-    
-    /** The PKCS#11 library location. */
+
+    /**
+     * The PKCS#11 library location.
+     */
     String lib;
-    
-    /** Security officer PIN. */
+
+    /**
+     * Security officer PIN.
+     */
     String soPin;
-    
-    /** The PIN to unlock the private key. */
+
+    /**
+     * The PIN to unlock the private key.
+     */
     String pin;
-    
-    /** PKCS#11 provider instance name. Is the name set as name parameter in the SunPKCS11 provider configuration. */
+
+    /**
+     * PKCS#11 provider instance name. Is the name set as name parameter in the SunPKCS11 provider configuration.
+     */
     String name;
-    
-    /** All aliases. */
+
+    /**
+     * All aliases.
+     */
     List<String> aliasList;
 
-    /** Map of soft hsm credential configurations under its alias as key */
+    /**
+     * Map of soft hsm credential configurations under its alias as key
+     */
     Map<String, SoftHsmCredentialConfiguration> credentialConfigurationMap;
-    
-    /** The configuration provider name - SunPKCS11-<slot-name>. */
+
+    /**
+     * The configuration provider name - SunPKCS11-<slot-name>.
+     */
     String providerName;
-    
-    /** A mapping between aliases and certificates. */
+
+    /**
+     * A mapping between aliases and certificates.
+     */
     Map<String, X509Certificate> certificateMap;
 
     /**
      * The constructor checks the specified key folder and forms a list of aliases of keys that can be imported.
      *
      * @param credentialConfigurationList Configuration data credentials to be loaded into Soft HSM.
-     * @param name The name of this provider instance that will be used also as label of the slot
-     * @param lib The PKCS11 library location on the host
-     * @param pin The soft HSM PIN
+     * @param name                        The name of this provider instance that will be used also as label of the slot
+     * @param lib                         The PKCS11 library location on the host
+     * @param pin                         The soft HSM PIN
      */
     public PKCS11SoftHsmProvider(List<SoftHsmCredentialConfiguration> credentialConfigurationList, String name, String lib, String pin) {
         this.name = name.trim().replaceAll("\\s", "");
@@ -113,7 +133,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
         this.providerName = SUN_PROVIDER_PREFIX + this.name;
         this.certificateMap = new HashMap<>();
 
-        if (credentialConfigurationList != null || credentialConfigurationList.isEmpty()) {
+        if (credentialConfigurationList == null || credentialConfigurationList.isEmpty()) {
             return;
         }
 
@@ -125,11 +145,13 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
                 .map(cc -> {
                     String alias = cc.getName();
                     File certFile = new File(cc.getCertLocation());
-                    if (certFile.canRead()) {
+                    File keyFile = new File(cc.getKeyLocation());
+                    // Check that the certificate file and key file is present and that this alias has not already been configured.
+                    if (certFile.canRead() && keyFile.canRead() && !credentialConfigurationMap.containsKey(alias)) {
                         try {
                             X509Certificate cert = getCert(certFile);
                             certificateMap.put(alias, cert);
-                            credentialConfigurationMap.put(alias,cc);
+                            credentialConfigurationMap.put(alias, cc);
                             return alias;
                         } catch (Exception ex) {
                             LOG.error("Specified certificate file could not be parsed for alias: {}", alias);
@@ -143,8 +165,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
         if (isSoftHsmNotInitialized()) {
             LOG.info("SoftHSM is not initialized - Loading keys into soft HSM");
             loadKeys();
-        } 
-        else {
+        } else {
             // Keys are already loaded into the SoftHsm.
             // Probable cause is a restart of the application on host with loaded keys
             // Just load Provider and exit
@@ -152,9 +173,9 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
         }
         loadProvider();
     }
-    
+
     public PKCS11SoftHsmProvider(PKCS11SoftHsmProviderConfiguration configuration) {
-      this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin());
+        this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin());
     }
 
     /**
@@ -172,9 +193,13 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
 
     private void loadProvider() {
         // Load provider
-        Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream());
-        Security.addProvider(pkcs11Provider);
-        LOG.info("Added provider {}", pkcs11Provider.getName());
+        try {
+            Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream());
+            Security.addProvider(pkcs11Provider);
+            LOG.info("Added provider {}", pkcs11Provider.getName());
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to load provider: "+ ex.getMessage());
+        }
     }
 
     private boolean isSoftHsmNotInitialized() {

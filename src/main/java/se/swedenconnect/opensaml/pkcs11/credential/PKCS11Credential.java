@@ -59,6 +59,7 @@ public class PKCS11Credential extends BasicX509Credential {
     protected  Map<String, PrivateKey> privateKeyMap;
     private String alias;
     private String pin;
+    private String currentKeyProvider;
 
 
     /**
@@ -124,7 +125,8 @@ public class PKCS11Credential extends BasicX509Credential {
 
     protected String getRandomProviderFromPool() {
         List<String> providersWithKey = privateKeyMap.keySet().stream().collect(Collectors.toList());
-        return providersWithKey.get(RNG.nextInt(providersWithKey.size()));
+        currentKeyProvider = providersWithKey.get(RNG.nextInt(providersWithKey.size()));
+        return currentKeyProvider;
     }
 
     /**
@@ -169,5 +171,9 @@ public class PKCS11Credential extends BasicX509Credential {
             return super.getPrivateKey();
         }
         return currentPrivateKey;
+    }
+
+    public String getCurrentKeyProvider() {
+        return currentKeyProvider;
     }
 }

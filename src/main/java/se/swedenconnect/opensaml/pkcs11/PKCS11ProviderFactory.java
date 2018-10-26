@@ -51,11 +51,11 @@ public class PKCS11ProviderFactory {
   }
 
 
-  protected PKCS11Provider createInstance() throws Exception {
+  public PKCS11Provider createInstance() throws Exception {
 
     if (PKCS11ProvidedCfgConfiguration.class.isInstance(this.configuration)){
       PKCS11ProvidedCfgConfiguration providedCfgConfig = PKCS11ProvidedCfgConfiguration.class.cast(this.configuration);
-      if (providedCfgConfig.getConfigLocationList() != null && !providedCfgConfig.getConfigLocationList().isEmpty()){
+      if (providedCfgConfig.getConfigLocationList() != null){
         log.info("Found PKCS11 configuration for externally provided cfg files for PKCS11 token/HSM");
         return new PKCS11ExternalCfgProvider(providedCfgConfig);
       }
