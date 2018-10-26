@@ -99,7 +99,39 @@
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
         </exclusion>
+        <!-- 
+          https://snyk.io/vuln/SNYK-JAVA-ORGBOUNCYCASTLE-32369
+          https://snyk.io/vuln/SNYK-JAVA-ORGBOUNCYCASTLE-32412
+          Should be replaced by version 1.60 
+        -->
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+        <!--
+          https://snyk.io/vuln/SNYK-JAVA-COMGOOGLEGUAVA-32236 
+         -->
+         <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+         </exclusion>
       </exclusions>
+    </dependency>
+    
+    <!-- 1.59 has vulnerabilities -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.60</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- 20.0 has vulnerabilities -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>27.0-jre</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
