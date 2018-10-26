@@ -18,7 +18,7 @@ You can either build the library yourself, or include the following in your POM-
 ```
 <dependency>
   <groupId>se.swedenconnect.opensaml</groupId>
-  <artifactId>pkcs11-support</artifactId>
+  <artifactId>opensaml-pkcs11-support</artifactId>
   <version>${pkcs11-support.version}</version>
 </dependency>
 ```
