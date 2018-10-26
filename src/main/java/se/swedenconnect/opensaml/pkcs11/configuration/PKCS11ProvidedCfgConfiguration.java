@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Swedish Agency for Digital Government
+ * Copyright 2018 Swedish Agency for Digital Government
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,28 +25,33 @@ import java.util.List;
  */
 public class PKCS11ProvidedCfgConfiguration extends PKCS11ProviderConfiguration {
 
-    /**
-     * A list of absolute paths to provided PKCS#11 provider configuration files.
-     */
-    private List<String> configLocationList;
+  /** A list of absolute paths to provided PKCS#11 provider configuration files. */
+  private List<String> configLocationList;
 
-    public PKCS11ProvidedCfgConfiguration(List<String> configLocationList) {
-        super();
-        this.configLocationList = configLocationList;
-    }
+  /**
+   * Constructor.
+   * 
+   * @param configLocationList
+   *          a list of configuration locations
+   */
+  public PKCS11ProvidedCfgConfiguration(List<String> configLocationList) {
+    super();
+    this.configLocationList = configLocationList;
+  }
 
-    /**
-     * Getter for the list of PKCS#11 provider configuration files.
-     * @return List of PKCS#11 provider configuration files.
-     */
-    public List<String> getConfigLocationList() {
-        return configLocationList;
-    }
+  /**
+   * Getter for the list of PKCS#11 provider configuration files.
+   * 
+   * @return List of PKCS#11 provider configuration files.
+   */
+  public List<String> getConfigLocationList() {
+    return this.configLocationList;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return String.format("External cfg configuration ('%s')", String.join(",", configLocationList));
-    }
+  /** {@inheritDoc} */
+  @Override
+  public String toString() {
+    return String.format("External cfg configuration ('%s')", String.join(",", this.configLocationList));
+  }
 
 }

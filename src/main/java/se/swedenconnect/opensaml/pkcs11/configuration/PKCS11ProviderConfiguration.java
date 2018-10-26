@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 E-legitimationsnämnden
+ * Copyright 2018 Swedish Agency for Digital Government
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,6 @@ public class PKCS11ProviderConfiguration {
 
   /** The maximum number och slots to use starting from the slotListIndex */
   protected Integer slotListIndexMaxRange;
-
-  public PKCS11ProviderConfiguration() {
-  }
 
   /**
    * Returns the path to the pkcs11 library on the host to use for the provider.
@@ -111,11 +108,11 @@ public class PKCS11ProviderConfiguration {
    * Returns the slot list index to use.
    * <p>
    * If no slot list index is assigned ({@code null} is returned), the following logic applies:
+   * </p>
    * <ul>
    * <li>If {@code slot} ({@link #getSlot()}) is {@code null}, the default slot list index 0 will be used.</li>
    * <li>If {@code slot} ({@link #getSlot()}) is non-null, the slot identified by this slot number will be used.</li>
    * </ul>
-   * </p>
    * 
    * @return the slot list index
    */
@@ -135,6 +132,7 @@ public class PKCS11ProviderConfiguration {
 
   /**
    * Returns the maximum range of slot list indexes to traverse, starting from the active {@code slotListIndex}.
+   * 
    * @return the maximum slot list index range
    */
   public Integer getSlotListIndexMaxRange() {
@@ -145,7 +143,7 @@ public class PKCS11ProviderConfiguration {
    * Assigns the slot list index max range
    *
    * @param slotListIndexMaxRange
-   *             slot list index max range
+   *          slot list index max range
    */
   public void setSlotListIndexMaxRange(Integer slotListIndexMaxRange) {
     this.slotListIndexMaxRange = slotListIndexMaxRange != null ? (slotListIndexMaxRange >= 0 ? slotListIndexMaxRange : null) : null;
@@ -154,9 +152,8 @@ public class PKCS11ProviderConfiguration {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return String.format("library='%s', name='%s', slot='%s', slotListIndex='%s'", 
+    return String.format("library='%s', name='%s', slot='%s', slotListIndex='%s'",
       this.library, this.name, this.slot, this.slotListIndex);
   }
-
 
 }

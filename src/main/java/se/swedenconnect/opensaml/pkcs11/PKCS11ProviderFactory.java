@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Swedish Agency for Digital Government
+ * Copyright 2018 Swedish Agency for Digital Government
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11ExternalCfgProvider;
  * @author Martin Lindström (martin@idsec.se)
  */
 public class PKCS11ProviderFactory {
-  
+
   /** Class logger. */
   private final Logger log = LoggerFactory.getLogger(PKCS11ProviderFactory.class);
 
@@ -50,23 +50,29 @@ public class PKCS11ProviderFactory {
     this.configuration = configuration;
   }
 
-
+  /**
+   * Creates a {@code PKCS11Provider} instance given the factory's configuration.
+   * 
+   * @return a {@code PKCS11Provider}
+   * @throws Exception
+   *           for errors creating the instance
+   */
   public PKCS11Provider createInstance() throws Exception {
 
-    if (PKCS11ProvidedCfgConfiguration.class.isInstance(this.configuration)){
+    if (PKCS11ProvidedCfgConfiguration.class.isInstance(this.configuration)) {
       PKCS11ProvidedCfgConfiguration providedCfgConfig = PKCS11ProvidedCfgConfiguration.class.cast(this.configuration);
-      if (providedCfgConfig.getConfigLocationList() != null){
+      if (providedCfgConfig.getConfigLocationList() != null) {
         log.info("Found PKCS11 configuration for externally provided cfg files for PKCS11 token/HSM");
         return new PKCS11ExternalCfgProvider(providedCfgConfig);
       }
     }
-    
+
     if (this.configuration.getLibrary() == null || this.configuration.getName() == null) {
       // This is not a failure. It is perfectly OK to not configure any PKCS11 provider at all.
       log.info("No valid PKCS11 configuration found");
       return new PKCS11NullProvider();
     }
-    
+
     if (PKCS11SoftHsmProviderConfiguration.class.isInstance(this.configuration)) {
       PKCS11SoftHsmProviderConfiguration softHsmConfig = PKCS11SoftHsmProviderConfiguration.class.cast(this.configuration);
       if (softHsmConfig.getCredentialConfigurationList() != null && softHsmConfig.getPin() != null) {
