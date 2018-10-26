@@ -40,14 +40,7 @@ import java.util.stream.Collectors;
  * <ul>
  * <li>Soft HSM version 2 is installed</li>
  * <li>The command line tool tool pkcs11-tool is installed</li>
- * <li>All keys and certificates are stored in a dedicated folder with the name convention:
- * Key="alias.key" and Certificate="alias.crt". The key and the certificate will then be imported
- * to the soft hsm so it can be imported to a key store under the specified alias.</li>
  * </ul>
- * <p>
- * In order to make its keys available to the Java keystore under a specified alias, the soft HSM must
- * import both the private key and the certificate under the same ID and label.
- * </p>
  * <p>
  * This class utilises pkcs11-tool to initialize the HSM slot and to load keys and certificates into the soft HSM.
  * </p>
