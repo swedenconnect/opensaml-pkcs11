@@ -1,6 +1,9 @@
 ![Logo](images/sc-logo.png)
 
 # opensaml-pkcs11
+
+[![Known Vulnerabilities](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11?targetFile=pom.xml)
+
 This library provides the capability to create OpenSAML 3 credentials where the private key is stored and operated inside a PKCS#11 token/HSM.
 
 The process to create a PKCS#11 credential involves 2 steps:
