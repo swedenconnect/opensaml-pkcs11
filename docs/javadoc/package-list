@@ -1,0 +1,5 @@
+se.swedenconnect.opensaml.pkcs11
+se.swedenconnect.opensaml.pkcs11.configuration
+se.swedenconnect.opensaml.pkcs11.credential
+se.swedenconnect.opensaml.pkcs11.providerimpl
+se.swedenconnect.opensaml.pkcs11.utils
