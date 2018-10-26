@@ -20,8 +20,8 @@ You can either build the library yourself, or include the following in your POM-
 </dependency>
 ```
 
-* API documentation for the latest version of opensaml-pkcs11 library.
-* Project information.
+* API documentation for the latest version of opensaml-pkcs11 library - [http://docs.swedenconnect.se/opensaml-pkcs11/javadoc](http://docs.swedenconnect.se/opensaml-pkcs11/javadoc).
+* Project information - [http://docs.swedenconnect.se/opensaml-pkcs11/site/](http://docs.swedenconnect.se/opensaml-pkcs11/site).
 
 ## Creating PKCS#11 providers
 
