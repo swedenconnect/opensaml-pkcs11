@@ -20,8 +20,6 @@ You can either build the library yourself, or include the following in your POM-
 </dependency>
 ```
 
-> Will work as soon as we have published the artifact to Maven central.
-
 * API documentation for the latest version of opensaml-pkcs11 library.
 * Project information.
 
