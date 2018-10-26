@@ -2,7 +2,7 @@
 
 # opensaml-pkcs11
 
-[![Known Vulnerabilities](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11?targetFile=pom.xml)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.opensaml/opensaml-pkcs11-support/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.opensaml/opensaml-pkcs11-support) [![Known Vulnerabilities](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/swedenconnect/opensaml-pkcs11?targetFile=pom.xml)
 
 This library provides the capability to create OpenSAML 3 credentials where the private key is stored and operated inside a PKCS#11 token/HSM.
 
