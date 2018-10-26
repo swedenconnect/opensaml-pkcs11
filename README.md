@@ -8,6 +8,23 @@ The process to create a PKCS#11 credential involves 2 steps:
 1. Create PKCS#11 providers for each HSM operated key (or set of keys)
 2. Create OpenSAML credentials based on these providers.
 
+#### Maven and documentation
+
+You can either build the library yourself, or include the following in your POM-file:
+
+```
+<dependency>
+  <groupId>se.swedenconnect.opensaml</groupId>
+  <artifactId>pkcs11-support</artifactId>
+  <version>${pkcs11-support.version}</version>
+</dependency>
+```
+
+> Will work as soon as we have published the artifact to Maven central.
+
+* API documentation for the latest version of opensaml-pkcs11 library.
+* Project information.
+
 ## Creating PKCS#11 providers
 
 PKCS#11 Providers are created based on PKCS#11 provider configurations. Three different types of configuration options are supported:
@@ -87,11 +104,13 @@ Providers are instantiated by an instance of `PKCS11ProviderFactory`.
 
 Example:
 
-    PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuraion);
+    PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuration);
     PKCS11Provider pkcs11Provider = factory.createInstance();
 
 
+------
 
+Copyright &copy; 2018, [Swedish Agency for Digital Government](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
 
 
 

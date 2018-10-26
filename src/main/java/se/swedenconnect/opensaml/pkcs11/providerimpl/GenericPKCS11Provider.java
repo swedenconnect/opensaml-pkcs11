@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 E-legitimationsnämnden
+ * Copyright 2018 Swedish Agency for Digital Government
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,165 +40,173 @@ import sun.security.pkcs11.SunPKCS11;
 @SuppressWarnings("restriction")
 public class GenericPKCS11Provider implements PKCS11Provider {
 
-    /**
-     * Class logger.
-     */
-    private final Logger LOG = LoggerFactory.getLogger(GenericPKCS11Provider.class);
+  /** Class logger. */
+  private final Logger LOG = LoggerFactory.getLogger(GenericPKCS11Provider.class);
 
-    /**
-     * The pkcs11 library on the host to use.
-     */
-    private final String library;
+  /** The pkcs11 library on the host to use. */
+  private final String library;
 
-    /**
-     * The name of the HSM slot.
-     */
-    private final String name;
+  /** The name of the HSM slot. */
+  private final String name;
 
-    /**
-     * The slot number to use.
-     */
-    private final String slot;
+  /** The slot number to use. */
+  private final String slot;
 
-    /**
-     * The slot index to use.
-     */
-    private final Integer slotListIndex;
+  /** The slot index to use. */
+  private final Integer slotListIndex;
 
-    /**
-     * The maximum number och slots to use starting from the slotListIndex
-     */
-    private final Integer slotListIndexMaxRange;
+  /** The maximum number och slots to use starting from the slotListIndex. */
+  private final Integer slotListIndexMaxRange;
 
-    /**
-     * The provider name. See {@link #getProviderNameList()}.
-     */
-    private List<String> providerNameList;
+  /** The provider name list. See {@link #getProviderNameList()}. */
+  private List<String> providerNameList;
 
-    /**
-     * Constructor setting up the provider.
-     * <p>
-     * It is recommended to supply either slot or slotListIndex, but not both, since if the index and slot
-     * supplied does not match the device's view an error will occur.
-     * </p>
-     *
-     * @param name          Name of the HSM slot. The Provider name will be "SunPKCS11-{slotName}".
-     * @param library       The PKCS11 library on the host to use
-     * @param slot          The slot number, or null for default (slotListIndex of 0)
-     * @param slotListIndex The slotListIndex, or null for default (slotListIndex of 0)
-     */
-    public GenericPKCS11Provider(String name, String library, String slot, Integer slotListIndex, Integer slotListIndexMaxRange) {
-        if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("'name' must not be empty");
-        }
-        this.name = name.trim().replaceAll("\\s", "");
-        this.library = library;
-        this.providerNameList = new ArrayList<>();
-        this.slot = slot;
-        this.slotListIndex = slotListIndex;
-        this.slotListIndexMaxRange = slotListIndexMaxRange;
+  /**
+   * Constructor setting up the provider.
+   * <p>
+   * It is recommended to supply either slot or slotListIndex, but not both, since if the index and slot supplied does
+   * not match the device's view an error will occur.
+   * </p>
+   *
+   * @param name
+   *          name of the HSM slot. The Provider name will be "SunPKCS11-{slotName}"
+   * @param library
+   *          the PKCS11 library on the host to use
+   * @param slot
+   *          the slot number, or {@code null} for default (slotListIndex of 0)
+   * @param slotListIndex
+   *          the slotListIndex, or {@code null} for default (slotListIndex of 0)
+   * @param slotListIndexMaxRange
+   *          the max range for slots
+   */
+  public GenericPKCS11Provider(String name, String library, String slot, Integer slotListIndex, Integer slotListIndexMaxRange) {
+    if (!StringUtils.hasText(name)) {
+      throw new IllegalArgumentException("'name' must not be empty");
+    }
+    this.name = name.trim().replaceAll("\\s", "");
+    this.library = library;
+    this.providerNameList = new ArrayList<>();
+    this.slot = slot;
+    this.slotListIndex = slotListIndex;
+    this.slotListIndexMaxRange = slotListIndexMaxRange;
 
-        loadProviders();
+    this.loadProviders();
+  }
+
+  /**
+   * Constructor taking a {@code PKCS11ProviderConfiguration} to configure the provider
+   * 
+   * @param configuration
+   *          provider configuration
+   */
+  public GenericPKCS11Provider(PKCS11ProviderConfiguration configuration) {
+    this(configuration.getName(), configuration.getLibrary(), configuration.getSlot(), configuration.getSlotListIndex(), configuration
+      .getSlotListIndexMaxRange());
+  }
+
+  /**
+   * Loads the configured provider, or range of providers. If a specific provider was requested, this method throws an
+   * {@code IllegalArgumentException} if the provider could not be loaded. If a range of providers was reqeusted, then
+   * the available providers will be loaded. No exception will be thrown in this case.
+   * 
+   * @throws IllegalArgumentException
+   *           if a specific provider is requested, and can not be loaded
+   */
+  private void loadProviders() throws IllegalArgumentException {
+    try {
+      if (this.slotListIndexMaxRange == null && this.slotListIndex == null) {
+        this.loadProvider(null);
+        return;
+      }
+      if (this.slotListIndexMaxRange == null) {
+        this.loadProvider(this.slotListIndex);
+        return;
+      }
+    }
+    catch (IllegalArgumentException ex) {
+      throw new IllegalArgumentException("Failed to load the specified PKCS11 Provider");
     }
 
-    public GenericPKCS11Provider(PKCS11ProviderConfiguration configuration) {
-        this(configuration.getName(), configuration.getLibrary(), configuration.getSlot(), configuration.getSlotListIndex(), configuration.getSlotListIndexMaxRange());
+    for (int index = this.slotListIndex; index < this.slotListIndex + this.slotListIndexMaxRange; index++) {
+      try {
+        this.loadProvider(index);
+      }
+      catch (IllegalArgumentException ex) {
+        LOG.info("Loaded {} out of a maximum of {} PKCS11 slots", index - this.slotListIndex, this.slotListIndexMaxRange);
+        break;
+      }
     }
+  }
 
-    /**
-     * Loads the configured provider, or range of providers.
-     * If a specific provider was requested, this method throws an Illegal argument Exception if the provider could not be loaded
-     * If a range of providers was reqeusted, then the available providers will be loaded. No exception will be thrown in this case.
+  /**
+   * Loads the provider for a particular slot list index.
+   *
+   * @param index
+   *          the slot list index to load and the value {@code null} if default index is used
+   * @throws IllegalArgumentException
+   *           thrown if the provider could not be loaded
+   */
+  private void loadProvider(Integer index) throws IllegalArgumentException {
+    try {
+      Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream(index));
+      Security.addProvider(pkcs11Provider);
+      this.providerNameList.add(pkcs11Provider.getName());
+      LOG.info("Added provider {}", pkcs11Provider.getName());
+    }
+    catch (Exception ex) {
+      LOG.error("Exception {} caught while loading provider with index {} - Msg: {}", ex.getClass().getName(), index, ex.getMessage(), ex);
+      throw new IllegalArgumentException("PKCS11 slot index reached upper bound");
+    }
+  }
+
+  /**
+   * Generates the PKCS11 configuration stream to load the security provider.
+   * 
+   * @param index
+   *          the slot index
+   * @return configuration data input stream
+   */
+  private InputStream getPkcs11ConfigStream(Integer index) {
+
+    /*
+     * library = /usr/lib/softhsm/libsofthsm2.so name = SoftHsm slot = 0 slotListIndex = 0
      */
-    private void loadProviders() throws IllegalArgumentException {
-        try {
-            if (slotListIndexMaxRange == null && slotListIndex == null) {
-                loadProvider(null);
-                return;
-            }
-            if (slotListIndexMaxRange == null) {
-                loadProvider(slotListIndex);
-                return;
-            }
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Failed to load the specified PKCS11 Provider");
-        }
+    StringBuilder b = new StringBuilder();
+    b.append("library = ")
+      .append(library)
+      .append("\n")
+      .append("name = ")
+      .append(getProviderNamePart(index))
+      .append("\n");
 
-        for (int index = slotListIndex; index < slotListIndex + slotListIndexMaxRange; index++) {
-            try {
-                loadProvider(index);
-            } catch (IllegalArgumentException ex) {
-                LOG.info("Loaded {} out of a maximum of {} PKCS11 slots", index - slotListIndex, slotListIndexMaxRange);
-                break;
-            }
-        }
+    if (slot != null) {
+      b.append("slot = ").append(slot).append("\n");
     }
-
-    /**
-     * Loads the provider for a particular slot list index
-     *
-     * @param index The slot list index to load and the value {@code null} if default index is used.
-     * @throws IllegalArgumentException This exception is thrown if the provider could not be loaded.
-     */
-    private void loadProvider(Integer index) throws IllegalArgumentException {
-        // Load provider
-        try {
-            Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream(index));
-            Security.addProvider(pkcs11Provider);
-            providerNameList.add(pkcs11Provider.getName());
-            LOG.info("Added provider {}", pkcs11Provider.getName());
-        } catch (Exception ex) {
-            LOG.error("Exception {} caught while loading provider with index {} - Msg: {}", ex.getClass().getName(), index, ex.getMessage(), ex);
-            throw new IllegalArgumentException("PKCS11 slot index reached upper bound.");
-        }
+    if (index != null) {
+      b.append("slotListIndex = ").append(index).append("\n");
     }
+    LOG.debug("Generated PKCS11 configuration: \n{}", b.toString());
 
-    /**
-     * Generates the PKCS11 configuration stream to load the security provider
-     *
-     * @return Configuration data input Stream
-     */
-    private InputStream getPkcs11ConfigStream(Integer index) {
-        /*
-         * library = /usr/lib/softhsm/libsofthsm2.so
-         * name = SoftHsm
-         * slot = 0
-         * slotListIndex = 0
-         */
+    return new ByteArrayInputStream(b.toString().getBytes(StandardCharsets.UTF_8));
+  }
 
-        StringBuilder b = new StringBuilder();
-        b.append("library = ")
-                .append(library)
-                .append("\n")
-                .append("name = ")
-                .append(getProviderNamePart(index))
-                .append("\n");
-
-        if (slot != null) {
-            b.append("slot = ").append(slot).append("\n");
-        }
-
-        if (index != null) {
-            b.append("slotListIndex = ").append(index).append("\n");
-        }
-
-        LOG.debug("Generated PKCS11 configuration: \n{}", b.toString());
-
-        return new ByteArrayInputStream(b.toString().getBytes(StandardCharsets.UTF_8));
+  /**
+   * Returns the provider name part of the provider name
+   * 
+   * @param index
+   *          the index (may be {@code null})
+   * @return the provider name part
+   */
+  private String getProviderNamePart(Integer index) {
+    if (index == null) {
+      return this.name;
     }
+    return this.name + "-" + String.valueOf(index);
+  }
 
-    private String getProviderNamePart(Integer index) {
-        if (index == null) {
-            return name;
-        }
-        return name + "-" + String.valueOf(index);
-    }
-
-    /**
-     * Returns the provider name which is "SunPKCS11-<slot-name>[-index]".
-     */
-    @Override
-    public List<String> getProviderNameList() {
-        return this.providerNameList;
-    }
+  /** {@inheritDoc} */
+  @Override
+  public List<String> getProviderNameList() {
+    return this.providerNameList;
+  }
 }

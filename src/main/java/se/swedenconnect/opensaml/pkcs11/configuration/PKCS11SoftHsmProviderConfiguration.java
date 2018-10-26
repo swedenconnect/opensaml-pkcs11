@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 E-legitimationsnämnden
+ * Copyright 2018 Swedish Agency for Digital Government
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class PKCS11SoftHsmProviderConfiguration extends PKCS11ProviderConfigurat
   /**
    * Returns the cofniguration data for keys and certificates that should be loaded by the SoftHSM provider.
    * 
-   * @return List of soft HSM credential configurations
+   * @return list of soft HSM credential configurations
    */
   public List<SoftHsmCredentialConfiguration> getCredentialConfigurationList() {
     return credentialConfigurationList;
@@ -46,12 +46,12 @@ public class PKCS11SoftHsmProviderConfiguration extends PKCS11ProviderConfigurat
   /**
    * Assigns the directory containing the keys and certificates that should be loaded by the SoftHSM provider.
    * 
-   * @param credentialConfigurationList List of soft HSM credential configurations
+   * @param credentialConfigurationList
+   *          list of soft HSM credential configurations
    */
   public void setCredentialConfigurationList(List<SoftHsmCredentialConfiguration> credentialConfigurationList) {
     this.credentialConfigurationList = credentialConfigurationList;
   }
-
 
   /**
    * Returns the PIN needed to write the key.
@@ -75,7 +75,9 @@ public class PKCS11SoftHsmProviderConfiguration extends PKCS11ProviderConfigurat
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return String.format("%s, keyLocation='%s', pin='*****'", super.toString(), String.join(", ", credentialConfigurationList.stream().map(sc -> sc.toString()).collect(Collectors.toList())));
+    return String.format("%s, keyLocation='%s', pin='*****'", super.toString(), String.join(", ", credentialConfigurationList.stream()
+      .map(sc -> sc.toString())
+      .collect(Collectors.toList())));
   }
 
 }
