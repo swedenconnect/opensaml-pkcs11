@@ -120,7 +120,7 @@ Two credential classes are available
 
 Both credential types provide an instance of the requested key by randomly selecting of one of the available keys under the specified alias.
 
-The PKCS11Credential object performs a pre-sign test before using the key. I the connection to the key is lost, the key is reloaded. This credential type is intended for low transaction volume implementations with a high demand for availability. This option means a certain loss of performance capacity due to the key testing activity.
+The PKCS11Credential object performs a pre-sign test before using the key. If the connection to the key is lost, the key is reloaded. This credential type is intended for low transaction volume implementations with a high demand for availability. This option means a certain loss of performance capacity due to the key testing activity.
 
 The PKCS11NoTestCredential does not perform any test on the key and does not attempt reloading. This is intended for high volume deployment with redundancy built into the system.
 
