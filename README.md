@@ -36,7 +36,9 @@ PKCS#11 Providers are created based on PKCS#11 provider configurations. Three di
 
 The PKCS#11 providers that are created are instances of `sun.security.pkcs11.SunPKCS11` as described in the [Java PKCS#11 Reference Guide](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html)
 
-Each private key may be represented by multiple instances of the same key stored in separate HSM modules for redundancy and load balancing. Each of these instances of the same key will have its own provider instance.
+Each private key may be represented by multiple instances of the same key stored in separate HSM modules for redundancy and load balancing. 
+
+The basic structure allows configuration of multiple HSM slots, where each slot holds an identical set of private keys, where each key is identified by its alias. The configuration options provided below is intended to initiate all HSM slots for all available private keys for a service.
 
 ### External config
 The external config provider is created by an instance of the `PKCS11ProvidedCfgConfiguration` class
@@ -107,6 +109,28 @@ Example:
 
     PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuration);
     PKCS11Provider pkcs11Provider = factory.createInstance();
+
+
+## Creating OpenSAML PKCS#11 credentials
+
+Two credential classes are available
+
+1. PKCS11Credential
+2. PKCS11NoTestCredential
+
+Both credential types provide an instance if the requested key by random selection of one of the available keys under the specified alias.
+
+The PKCS11Credential object performs a pre-sign test before using the key. I the connection to the key is lost, the key is reloaded.
+
+The PKCS11NoTestCredential does not perform any test on the key and does not attempt reloading.
+
+Examlple:
+
+        PKCS11Provider provider = getProvider();
+        Credential credential = new PKCS11Credential(
+                x509Cert,
+                provider.getProviderNameList(),
+                "alias","1234");
 
 
 ------
