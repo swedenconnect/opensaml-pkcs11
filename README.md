@@ -118,7 +118,7 @@ Two credential classes are available
 1. PKCS11Credential
 2. PKCS11NoTestCredential
 
-Both credential types provide an instance if the requested key by random selection of one of the available keys under the specified alias.
+Both credential types provide an instance of the requested key by randomly selecting of one of the available keys under the specified alias.
 
 The PKCS11Credential object performs a pre-sign test before using the key. I the connection to the key is lost, the key is reloaded. This credential type is intended for low transaction volume implementations with a high demand for availability. This option means a certain loss of performance capacity due to the key testing activity.
 
