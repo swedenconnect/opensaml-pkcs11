@@ -120,11 +120,11 @@ Two credential classes are available
 
 Both credential types provide an instance if the requested key by random selection of one of the available keys under the specified alias.
 
-The PKCS11Credential object performs a pre-sign test before using the key. I the connection to the key is lost, the key is reloaded.
+The PKCS11Credential object performs a pre-sign test before using the key. I the connection to the key is lost, the key is reloaded. This credential type is intended for low transaction volume implementations with a high demand for availability. This option means a certain loss of performance capacity due to the key testing activity.
 
-The PKCS11NoTestCredential does not perform any test on the key and does not attempt reloading.
+The PKCS11NoTestCredential does not perform any test on the key and does not attempt reloading. This is intended for high volume deployment with redundancy built into the system.
 
-Examlple:
+Example:
 
         PKCS11Provider provider = getProvider();
         Credential credential = new PKCS11Credential(
