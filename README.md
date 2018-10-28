@@ -8,7 +8,7 @@ This library provides the capability to create OpenSAML 3 credentials where the 
 
 The process to create a PKCS#11 credential involves 2 steps:
 
-1. Create PKCS#11 providers for each HSM operated key (or set of keys)
+1. Create PKCS#11 providers for HSM operated keys
 2. Create OpenSAML credentials based on these providers.
 
 #### Maven and documentation
@@ -45,7 +45,7 @@ The external config provider is created by an instance of the `PKCS11ProvidedCfg
 
 Example:
 
-        PKCS11ProvidedCfgConfiguration configuration = 
+        PKCS11ProviderConfiguration configuration = 
                 new PKCS11ProvidedCfgConfiguration(Arrays.asList(
                 "/path-to-first-hsm-configuration-file",
                 "/path-to-second-hsm-configuration-file"
@@ -89,7 +89,7 @@ Installation of pkcs-11-tool can be achieved on linux using the following script
 
 Example configuration setup for SoftHSM:
 
-        PKCS11SoftHsmProviderConfiguration configuration
+        PKCS11ProviderConfiguration configuration
                 = new PKCS11SoftHsmProviderConfiguration();
         configuration.setCredentialConfigurationList(
                 Arrays.asList(
