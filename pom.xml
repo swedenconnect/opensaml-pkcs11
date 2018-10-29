@@ -7,7 +7,7 @@
 
   <groupId>se.swedenconnect.opensaml</groupId>
   <artifactId>opensaml-pkcs11-support</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
 
   <name>Sweden Connect::OpenSAML PKCS11 extension library</name>
   <description>Support for PKCS11 based keys and HSM in OpenSAML Credentials</description>

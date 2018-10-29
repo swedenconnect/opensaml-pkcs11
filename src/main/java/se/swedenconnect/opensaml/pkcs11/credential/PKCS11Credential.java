@@ -173,6 +173,14 @@ public class PKCS11Credential extends BasicX509Credential {
         return currentPrivateKey;
     }
 
+    /**
+     * Get the provider of the most recently selected private key.
+     *
+     * <p>Note: This method is mainly intended for logging purposes. It may not be thread safe to rely on this method
+     * unless it is called from within a synchronized method after loading the private key.</p>
+     *
+     * @return THe name of the provider of the most recently loaded private key.
+     */
     public String getCurrentKeyProvider() {
         return currentKeyProvider;
     }
