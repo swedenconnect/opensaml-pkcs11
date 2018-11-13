@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProvidedCfgConfiguration;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProviderConfiguration;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.GenericPKCS11Provider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11NullProvider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11SoftHsmProvider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11ExternalCfgProvider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.*;
 
 /**
  * Factory class for creating an instance of a PKCS11 provider based on provided configuration data.
@@ -40,14 +37,18 @@ public class PKCS11ProviderFactory {
   /** The configuration. */
   private PKCS11ProviderConfiguration configuration;
 
+  /** The interface to a provided SunPKCS11 instantiator (Different depending on Java version) */
+  private PKCS11ProviderInstance providerInstance;
+
   /**
    * Constructor.
    * 
    * @param configuration
    *          the provider configuration
    */
-  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration) {
+  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this.configuration = configuration;
+    this.providerInstance = providerInstance;
   }
 
   /**
@@ -63,7 +64,7 @@ public class PKCS11ProviderFactory {
       PKCS11ProvidedCfgConfiguration providedCfgConfig = PKCS11ProvidedCfgConfiguration.class.cast(this.configuration);
       if (providedCfgConfig.getConfigLocationList() != null) {
         log.info("Found PKCS11 configuration for externally provided cfg files for PKCS11 token/HSM");
-        return new PKCS11ExternalCfgProvider(providedCfgConfig);
+        return new PKCS11ExternalCfgProvider(providedCfgConfig, providerInstance);
       }
     }
 
@@ -77,11 +78,11 @@ public class PKCS11ProviderFactory {
       PKCS11SoftHsmProviderConfiguration softHsmConfig = PKCS11SoftHsmProviderConfiguration.class.cast(this.configuration);
       if (softHsmConfig.getCredentialConfigurationList() != null && softHsmConfig.getPin() != null) {
         log.info("Found PKCS11 configuration for SoftHSM");
-        return new PKCS11SoftHsmProvider(softHsmConfig);
+        return new PKCS11SoftHsmProvider(softHsmConfig, providerInstance);
       }
     }
     log.info("Found PKCS11 configuration for PKCS11 token/HSM");
-    return new GenericPKCS11Provider(this.configuration);
+    return new GenericPKCS11Provider(this.configuration, providerInstance);
   }
 
 }

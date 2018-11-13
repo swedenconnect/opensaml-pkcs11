@@ -61,6 +61,9 @@ public class GenericPKCS11Provider implements PKCS11Provider {
   /** The provider name list. See {@link #getProviderNameList()}. */
   private List<String> providerNameList;
 
+  /** The interface to a provided SunPKCS11 instantiator (Different depending on Java version) */
+  private PKCS11ProviderInstance providerInstance;
+
   /**
    * Constructor setting up the provider.
    * <p>
@@ -79,7 +82,7 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    * @param slotListIndexMaxRange
    *          the max range for slots
    */
-  public GenericPKCS11Provider(String name, String library, String slot, Integer slotListIndex, Integer slotListIndexMaxRange) {
+  public GenericPKCS11Provider(String name, String library, String slot, Integer slotListIndex, Integer slotListIndexMaxRange, PKCS11ProviderInstance providerInstance) {
     if (!StringUtils.hasText(name)) {
       throw new IllegalArgumentException("'name' must not be empty");
     }
@@ -89,6 +92,7 @@ public class GenericPKCS11Provider implements PKCS11Provider {
     this.slot = slot;
     this.slotListIndex = slotListIndex;
     this.slotListIndexMaxRange = slotListIndexMaxRange;
+    this.providerInstance = providerInstance;
 
     this.loadProviders();
   }
@@ -99,9 +103,14 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    * @param configuration
    *          provider configuration
    */
-  public GenericPKCS11Provider(PKCS11ProviderConfiguration configuration) {
-    this(configuration.getName(), configuration.getLibrary(), configuration.getSlot(), configuration.getSlotListIndex(), configuration
-      .getSlotListIndexMaxRange());
+  public GenericPKCS11Provider(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
+    this(
+            configuration.getName(),
+            configuration.getLibrary(),
+            configuration.getSlot(),
+            configuration.getSlotListIndex(),
+            configuration.getSlotListIndexMaxRange(),
+            providerInstance);
   }
 
   /**
@@ -148,7 +157,7 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    */
   private void loadProvider(Integer index) throws IllegalArgumentException {
     try {
-      Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream(index));
+      Provider pkcs11Provider = providerInstance.getProviderInstance(getPkcs11ConfigString(index));
       Security.addProvider(pkcs11Provider);
       this.providerNameList.add(pkcs11Provider.getName());
       LOG.info("Added provider {}", pkcs11Provider.getName());
@@ -166,7 +175,7 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    *          the slot index
    * @return configuration data input stream
    */
-  private InputStream getPkcs11ConfigStream(Integer index) {
+  private String getPkcs11ConfigString(Integer index) {
 
     /*
      * library = /usr/lib/softhsm/libsofthsm2.so name = SoftHsm slot = 0 slotListIndex = 0
@@ -187,7 +196,7 @@ public class GenericPKCS11Provider implements PKCS11Provider {
     }
     LOG.debug("Generated PKCS11 configuration: \n{}", b.toString());
 
-    return new ByteArrayInputStream(b.toString().getBytes(StandardCharsets.UTF_8));
+    return b.toString();
   }
 
   /**
