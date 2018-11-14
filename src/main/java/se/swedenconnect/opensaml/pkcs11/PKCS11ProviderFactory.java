@@ -22,6 +22,11 @@ import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProvidedCfgConfigura
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProviderConfiguration;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
 import se.swedenconnect.opensaml.pkcs11.providerimpl.*;
+import sun.security.pkcs11.SunPKCS11;
+
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.Provider;
 
 /**
  * Factory class for creating an instance of a PKCS11 provider based on provided configuration data.
@@ -49,6 +54,25 @@ public class PKCS11ProviderFactory {
   public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this.configuration = configuration;
     this.providerInstance = providerInstance;
+  }
+
+  /**
+   * Deprecated legacy constructor. This constructor is only compatible with java 8 and will not work when called from Java 9+
+   *
+   * Use the constructor where an instance of PKCS11ProviderInstance providerInstance is provided.
+   *
+   * @param configuration
+   *          the provider configuration
+   */
+  @Deprecated
+  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration) {
+    this(configuration, new PKCS11ProviderInstance() {
+      @Override
+      public Provider getProviderInstance(String configData) {
+        Provider pkcs11provider = new SunPKCS11(new ByteArrayInputStream(configData.getBytes(StandardCharsets.UTF_8)));
+        return pkcs11provider;
+      }
+    });
   }
 
   /**

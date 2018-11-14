@@ -37,7 +37,7 @@ public class PKCS11Test {
         PKCS11SoftHsmProviderConfiguration mockConfig = mock(PKCS11SoftHsmProviderConfiguration.class);
 
         PKCS11ProviderInstance mockProviderInstance = mock(PKCS11ProviderInstance.class);
-        when(mockProviderInstance.getProviderInstance(anyString())).thenReturn(new SunPKCS11());
+        when(mockProviderInstance.getProviderInstance(anyString())).thenReturn(null);
 
         //Test null configuration creates null providerimpl
         assertTrue(new PKCS11ProviderFactory(mockConfig, mockProviderInstance).createInstance() instanceof PKCS11NullProvider);
