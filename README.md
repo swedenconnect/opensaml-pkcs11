@@ -65,7 +65,7 @@ Example:
         configuration.setSlot("0");
         configuration.setSlotListIndexMaxRange(4);
 
-All parameters are as specified in the [Java PKCS#11 Reference Guide](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html), except for the additional parameter SlotListIndexMaxRange. If this parameter is set to a number greater than 0, then all slots ranging from the specified slot up to the slot + maxRange will be tested and instantiated with an individual provider. All slots in this range will be instantiated until either the maxRange is reached or an empty slot is encountered.
+All parameters are as specified in the [Java PKCS#11 Reference Guide for Java 8](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html) or [Java PKCS#11 Reference Guide for Java 11](https://docs.oracle.com/en/java/javase/11/security/pkcs11-reference-guide1.html), except for the additional parameter SlotListIndexMaxRange. If this parameter is set to a number greater than 0, then all slots ranging from the specified slot up to the slot + maxRange will be tested and instantiated with an individual provider. All slots in this range will be instantiated until either the maxRange is reached or an empty slot is encountered.
 
 ### Soft HSM config
 SoftHSM is configured by an instance of the `PKCS11SoftHsmProviderConfiguration` class.
