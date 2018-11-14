@@ -158,10 +158,10 @@ The PKCS11NoTestCredential does not perform any test on the key and does not att
 
 Example:
 
-        PKCS11Provider provider = getProvider();
+        PKCS11Provider pkcs11Provider = getProvider();
         Credential credential = new PKCS11Credential(
                 x509Cert,
-                provider.getProviderNameList(),
+                pkcs11Provider.getProviderNameList(),
                 "alias","1234");
 
 
