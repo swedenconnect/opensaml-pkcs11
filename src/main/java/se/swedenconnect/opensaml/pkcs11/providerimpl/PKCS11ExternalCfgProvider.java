@@ -51,6 +51,8 @@ public class PKCS11ExternalCfgProvider implements PKCS11Provider {
    *
    * @param configuration
    *          configuration data object
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public PKCS11ExternalCfgProvider(PKCS11ProvidedCfgConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this(configuration.getConfigLocationList(), providerInstance);
@@ -61,6 +63,8 @@ public class PKCS11ExternalCfgProvider implements PKCS11Provider {
    *
    * @param externalCfgPathList
    *          The list of configuration files to be used to load PKCS#11 providers.
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public PKCS11ExternalCfgProvider(List<String> externalCfgPathList, PKCS11ProviderInstance providerInstance) {
     if (externalCfgPathList == null) {

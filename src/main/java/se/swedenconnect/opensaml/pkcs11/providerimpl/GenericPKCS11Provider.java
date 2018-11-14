@@ -81,6 +81,8 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    *          the slotListIndex, or {@code null} for default (slotListIndex of 0)
    * @param slotListIndexMaxRange
    *          the max range for slots
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public GenericPKCS11Provider(String name, String library, String slot, Integer slotListIndex, Integer slotListIndexMaxRange, PKCS11ProviderInstance providerInstance) {
     if (!StringUtils.hasText(name)) {
@@ -102,6 +104,8 @@ public class GenericPKCS11Provider implements PKCS11Provider {
    * 
    * @param configuration
    *          provider configuration
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public GenericPKCS11Provider(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this(

@@ -50,6 +50,8 @@ public class PKCS11ProviderFactory {
    * 
    * @param configuration
    *          the provider configuration
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this.configuration = configuration;

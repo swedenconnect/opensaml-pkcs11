@@ -103,6 +103,8 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
    *          the PKCS11 library location on the host
    * @param pin
    *          the soft HSM PIN
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public PKCS11SoftHsmProvider(List<SoftHsmCredentialConfiguration> credentialConfigurationList, String name, String lib, String pin, PKCS11ProviderInstance providerInstance) {
     this.name = name.trim().replaceAll("\\s", "");
@@ -164,7 +166,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
    * @param configuration
    *          the configuration instance
    * @param providerInstance
-   *          The java version dependent provider instantiator
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
   public PKCS11SoftHsmProvider(PKCS11SoftHsmProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin(), providerInstance);
