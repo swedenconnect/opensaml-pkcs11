@@ -105,22 +105,24 @@ The `SoftHsmCredentialConfiguration` object holds information about the key that
 ## Instantiating providers
 Providers are instantiated by an instance of `PKCS11ProviderFactory`.
 
-Java 8 and Java 9+ has different and incompatible ways to create an instance of SunPKCS11 provider. In order to provide backwards compatibility, the old constructor that is only compatible with Java 8 is deprecated, but still works.
+Java 8 and Java 9+ have different and incompatible ways to create an instance of SunPKCS11 provider. In order to provide backwards compatibility, the old constructor that is only compatible with Java 8 is maintained but deprecated.
 
 Example with <del>deprecated</del> legacy constructor (Only with Java 8 applications):
 
     PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuration);
     PKCS11Provider pkcs11Provider = factory.createInstance();
 
-It is recommended to use the new constructor which also provided an implementation of how SunPKCS#11 is instantiated.
+It is recommended to use the new constructor which also requires an implementation of the `PKCS11ProviderInstance` interface. An implementation of the `PKCS11ProviderInstance` implements a function for creating an instance of the SunPKCS11 provider class based on a provided configuration data string (`configString`).
 
 Example for use with Java 8 applications:
 
-    PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuration, new PKCS11ProviderInstance() {
+    PKCS11ProviderFactory factory = new PKCS11ProviderFactory(configuration, 
+               new PKCS11ProviderInstance() {
         @Override
         public Provider getProviderInstance(String configString) {
             Provider sunPKCS11 = new SunPKCS11(
-                    new ByteArrayInputStream(configString.getBytes(StandardCharsets.UTF_8)));
+                    new ByteArrayInputStream(
+                            configString.getBytes(StandardCharsets.UTF_8)));
             return sunPKCS11;
         }
     });
