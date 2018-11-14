@@ -34,7 +34,7 @@ PKCS#11 Providers are created based on PKCS#11 provider configurations. Three di
 2. Specifying the parameters of configuration data
 3. Providing configuration data for SoftHSM usage for test
 
-The PKCS#11 providers that are created are instances of `sun.security.pkcs11.SunPKCS11` as described in the [Java PKCS#11 Reference Guide](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html)
+The PKCS#11 providers that are created are instances of `sun.security.pkcs11.SunPKCS11` as described in the [Java PKCS#11 Reference Guide for Java 8](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html) or [Java PKCS#11 Reference Guide for Java 11](https://docs.oracle.com/en/java/javase/11/security/pkcs11-reference-guide1.html), depending on your Java version.
 
 Each private key may be represented by multiple instances of the same key stored in separate HSM modules for redundancy and load balancing. 
 
@@ -51,7 +51,7 @@ Example:
                 "/path-to-second-hsm-configuration-file"
         ));
 
-Each provided configuration file is formatted according to the [Java PKCS#11 Reference Guide](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html).
+Each provided configuration file is formatted according to the Java SunPKCS11 Reference Guide.
 
 ### Parameter config
 Configuration can be provided by providing parameters in an instance of the `PKCS11ProviderConfiguration` class.
@@ -65,7 +65,7 @@ Example:
         configuration.setSlot("0");
         configuration.setSlotListIndexMaxRange(4);
 
-All parameters are as specified in the [Java PKCS#11 Reference Guide for Java 8](https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html) or [Java PKCS#11 Reference Guide for Java 11](https://docs.oracle.com/en/java/javase/11/security/pkcs11-reference-guide1.html), except for the additional parameter SlotListIndexMaxRange. If this parameter is set to a number greater than 0, then all slots ranging from the specified slot up to the slot + maxRange will be tested and instantiated with an individual provider. All slots in this range will be instantiated until either the maxRange is reached or an empty slot is encountered.
+All parameters are as specified in the SunPKCS11 reference guide except for the additional parameter SlotListIndexMaxRange. If this parameter is set to a number greater than 0, then all slots ranging from the specified slot up to the slot + maxRange will be tested and instantiated with an individual provider. All slots in this range will be instantiated until either the maxRange is reached or an empty slot is encountered.
 
 ### Soft HSM config
 SoftHSM is configured by an instance of the `PKCS11SoftHsmProviderConfiguration` class.
