@@ -89,6 +89,9 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
   /** A mapping between aliases and certificates. */
   private Map<String, X509Certificate> certificateMap;
 
+  /** The interface to a provided SunPKCS11 instantiator (Different depending on Java version) */
+  private PKCS11ProviderInstance providerInstance;
+
   /**
    * The constructor checks the specified key folder and forms a list of aliases of keys that can be imported.
    *
@@ -100,8 +103,10 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
    *          the PKCS11 library location on the host
    * @param pin
    *          the soft HSM PIN
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
-  public PKCS11SoftHsmProvider(List<SoftHsmCredentialConfiguration> credentialConfigurationList, String name, String lib, String pin) {
+  public PKCS11SoftHsmProvider(List<SoftHsmCredentialConfiguration> credentialConfigurationList, String name, String lib, String pin, PKCS11ProviderInstance providerInstance) {
     this.name = name.trim().replaceAll("\\s", "");
     this.lib = lib;
     this.pin = pin;
@@ -109,6 +114,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
     this.aliasList = new ArrayList<>();
     this.providerName = SUN_PROVIDER_PREFIX + this.name;
     this.certificateMap = new HashMap<>();
+    this.providerInstance = providerInstance;
 
     if (credentialConfigurationList == null || credentialConfigurationList.isEmpty()) {
       return;
@@ -155,13 +161,15 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
 
   /**
    * Constructor taking a {@code PKCS11SoftHsmProviderConfiguration}. See
-   * {@link #PKCS11SoftHsmProvider(List, String, String, String)}.
+   * {@link #PKCS11SoftHsmProvider(List, String, String, String, PKCS11ProviderInstance)}.
    * 
    * @param configuration
    *          the configuration instance
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
-  public PKCS11SoftHsmProvider(PKCS11SoftHsmProviderConfiguration configuration) {
-    this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin());
+  public PKCS11SoftHsmProvider(PKCS11SoftHsmProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
+    this(configuration.getCredentialConfigurationList(), configuration.getName(), configuration.getLibrary(), configuration.getPin(), providerInstance);
   }
 
   /**
@@ -182,7 +190,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
    */
   private void loadProvider() {
     try {
-      Provider pkcs11Provider = new SunPKCS11(getPkcs11ConfigStream());
+      Provider pkcs11Provider = providerInstance.getProviderInstance(getPkcs11ConfigString());
       Security.addProvider(pkcs11Provider);
       LOG.info("Added provider {}", pkcs11Provider.getName());
     }
@@ -296,7 +304,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
    *
    * @return configuration input stream
    */
-  private InputStream getPkcs11ConfigStream() {
+  private String getPkcs11ConfigString() {
     /*
      * library = /usr/lib/softhsm/libsofthsm2.so name = SoftHsm slotListIndex = 0
      */
@@ -311,7 +319,7 @@ public class PKCS11SoftHsmProvider implements PKCS11Provider {
 
     LOG.debug("Generated PKCS11 configuration: \n{}", b.toString());
 
-    return new ByteArrayInputStream(b.toString().getBytes(StandardCharsets.UTF_8));
+    return b.toString();
   }
 
   /**

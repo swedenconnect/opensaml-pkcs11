@@ -23,6 +23,9 @@ import sun.security.pkcs11.SunPKCS11;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -48,9 +51,11 @@ public class PKCS11ExternalCfgProvider implements PKCS11Provider {
    *
    * @param configuration
    *          configuration data object
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
-  public PKCS11ExternalCfgProvider(PKCS11ProvidedCfgConfiguration configuration) {
-    this(configuration.getConfigLocationList());
+  public PKCS11ExternalCfgProvider(PKCS11ProvidedCfgConfiguration configuration, PKCS11ProviderInstance providerInstance) {
+    this(configuration.getConfigLocationList(), providerInstance);
   }
 
   /**
@@ -58,8 +63,10 @@ public class PKCS11ExternalCfgProvider implements PKCS11Provider {
    *
    * @param externalCfgPathList
    *          The list of configuration files to be used to load PKCS#11 providers.
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
-  public PKCS11ExternalCfgProvider(List<String> externalCfgPathList) {
+  public PKCS11ExternalCfgProvider(List<String> externalCfgPathList, PKCS11ProviderInstance providerInstance) {
     if (externalCfgPathList == null) {
       throw new IllegalArgumentException("List of PKCS#11 provider cfg files must not be null");
     }
@@ -67,7 +74,8 @@ public class PKCS11ExternalCfgProvider implements PKCS11Provider {
 
     for (String cfgPath : externalCfgPathList) {
       try {
-        Provider pkcs11Provider = new SunPKCS11(new FileInputStream(new File(cfgPath)));
+        String configStr = new String(Files.readAllBytes(Paths.get(cfgPath)), StandardCharsets.UTF_8);
+        Provider pkcs11Provider = providerInstance.getProviderInstance(configStr);
         Security.addProvider(pkcs11Provider);
         this.providerNameList.add(pkcs11Provider.getName());
         LOG.info("Added provider {}", pkcs11Provider.getName());

@@ -21,10 +21,12 @@ import org.slf4j.LoggerFactory;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProvidedCfgConfiguration;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11ProviderConfiguration;
 import se.swedenconnect.opensaml.pkcs11.configuration.PKCS11SoftHsmProviderConfiguration;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.GenericPKCS11Provider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11NullProvider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11SoftHsmProvider;
-import se.swedenconnect.opensaml.pkcs11.providerimpl.PKCS11ExternalCfgProvider;
+import se.swedenconnect.opensaml.pkcs11.providerimpl.*;
+import sun.security.pkcs11.SunPKCS11;
+
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.Provider;
 
 /**
  * Factory class for creating an instance of a PKCS11 provider based on provided configuration data.
@@ -40,14 +42,39 @@ public class PKCS11ProviderFactory {
   /** The configuration. */
   private PKCS11ProviderConfiguration configuration;
 
+  /** The interface to a provided SunPKCS11 instantiator (Different depending on Java version) */
+  private PKCS11ProviderInstance providerInstance;
+
   /**
    * Constructor.
    * 
    * @param configuration
    *          the provider configuration
+   * @param providerInstance
+   *          Provider instantiation implementation (Depending on runtime Java version)
    */
-  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration) {
+  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration, PKCS11ProviderInstance providerInstance) {
     this.configuration = configuration;
+    this.providerInstance = providerInstance;
+  }
+
+  /**
+   * Deprecated legacy constructor. This constructor is only compatible with java 8 and will not work when called from Java 9+
+   *
+   * Use the constructor where an instance of PKCS11ProviderInstance providerInstance is provided.
+   *
+   * @param configuration
+   *          the provider configuration
+   */
+  @Deprecated
+  public PKCS11ProviderFactory(PKCS11ProviderConfiguration configuration) {
+    this(configuration, new PKCS11ProviderInstance() {
+      @Override
+      public Provider getProviderInstance(String configData) {
+        Provider pkcs11provider = new SunPKCS11(new ByteArrayInputStream(configData.getBytes(StandardCharsets.UTF_8)));
+        return pkcs11provider;
+      }
+    });
   }
 
   /**
@@ -63,7 +90,7 @@ public class PKCS11ProviderFactory {
       PKCS11ProvidedCfgConfiguration providedCfgConfig = PKCS11ProvidedCfgConfiguration.class.cast(this.configuration);
       if (providedCfgConfig.getConfigLocationList() != null) {
         log.info("Found PKCS11 configuration for externally provided cfg files for PKCS11 token/HSM");
-        return new PKCS11ExternalCfgProvider(providedCfgConfig);
+        return new PKCS11ExternalCfgProvider(providedCfgConfig, providerInstance);
       }
     }
 
@@ -77,11 +104,11 @@ public class PKCS11ProviderFactory {
       PKCS11SoftHsmProviderConfiguration softHsmConfig = PKCS11SoftHsmProviderConfiguration.class.cast(this.configuration);
       if (softHsmConfig.getCredentialConfigurationList() != null && softHsmConfig.getPin() != null) {
         log.info("Found PKCS11 configuration for SoftHSM");
-        return new PKCS11SoftHsmProvider(softHsmConfig);
+        return new PKCS11SoftHsmProvider(softHsmConfig, providerInstance);
       }
     }
     log.info("Found PKCS11 configuration for PKCS11 token/HSM");
-    return new GenericPKCS11Provider(this.configuration);
+    return new GenericPKCS11Provider(this.configuration, providerInstance);
   }
 
 }

@@ -68,10 +68,10 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
   }
 
   /**
-   * Overrides the default method to get the private key and adds a key test before the private key is extracted and
-   * returned. This allows an attempt to reload the key in case the connection to the key was lost.
+   * Overrides the default method to get an random available private key from any of the configured PKCS#11 providers.
+   * No test of the private key is performed before the private key object is returned.
    *
-   * @return the tested (and possibly reloaded) private key
+   * @return the private key object
    */
   @Override
   public synchronized PrivateKey getPrivateKey() {
