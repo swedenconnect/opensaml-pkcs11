@@ -79,10 +79,11 @@ For installation of SoftHSM refer to [SoftHSM on Open DNSSEC](https://www.opendn
 
 Installation of pkcs-11-tool can be achieved on linux using the following script:
 
+    apt-get update
     apt-get install -y pcscd libccid libpcsclite-dev libssl-dev libreadline-dev autoconf automake build-essential docbook-xsl xsltproc libtool pkg-config
-    wget https://github.com/OpenSC/OpenSC/releases/download/0.17.0/opensc-0.17.0.tar.gz
+    wget https://github.com/OpenSC/OpenSC/releases/download/0.19.0/opensc-0.19.0.tar.gz
     tar xfvz opensc-*.tar.gz
-    cd opensc-0.17.0
+    cd opensc-0.19.0
     ./bootstrap && ./configure --prefix=/usr --sysconfdir=/etc/opensc
     make && make install
     cd .. && rm -rf opensc*
