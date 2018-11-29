@@ -74,8 +74,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor) throws UnrecoverableKeyException,
-            NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor) throws Exception {
         this(entityCertificate, providerNameList, alias, null, customKeyExtractor);
     }
 
@@ -93,12 +92,14 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    private PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin, CustomKeyExtractor customKeyExtractor) throws UnrecoverableKeyException,
-            NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+    private PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin, CustomKeyExtractor customKeyExtractor) throws Exception {
         super(entityCertificate);
         if (pin == null && customKeyExtractor == null){
             LOG.error("A pin or a valid CustomKeyExtractor implementation must be provided");
             throw new IllegalArgumentException("Null pin and CustomKeyExtractor");
+        }
+        if(customKeyExtractor!=null){
+            LOG.info("Setting up PKCS11 Credential with custom key extractor");
         }
         this.providerNameList = providerNameList;
         this.alias = alias;
@@ -121,8 +122,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws UnrecoverableKeyException,
-            NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws Exception {
         this(entityCertificate,providerNameList,alias,pin,null);
     }
 
@@ -135,8 +135,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    private void loadPrivateKey() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
-            NoSuchProviderException, IOException {
+    private void loadPrivateKey() throws Exception {
         privateKeyMap = new HashMap<>();
         for (String providerName : providerNameList) {
             try {

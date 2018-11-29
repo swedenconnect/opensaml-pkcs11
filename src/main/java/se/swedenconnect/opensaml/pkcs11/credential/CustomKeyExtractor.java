@@ -28,6 +28,5 @@ public interface CustomKeyExtractor {
      * @param alias the alias under which the key is stored
      * @return a PrivateKey handler object
      */
-    PrivateKey getPrivateKey(String providerName, String alias);
-
+    PrivateKey getPrivateKey(String providerName, String alias) throws Exception;
 }

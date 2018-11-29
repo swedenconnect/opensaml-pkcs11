@@ -62,7 +62,7 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *           general IO errors
    */
   public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor)
-      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+      throws Exception {
     super(entityCertificate, providerNameList, alias, customKeyExtractor);
     LOG.info("Initiated PKCS11Credentials without private key testing prior to usage");
   }
@@ -90,7 +90,7 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *           general IO errors
    */
   public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin)
-      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+      throws Exception {
     super(entityCertificate, providerNameList, alias, pin);
     LOG.info("Initiated PKCS11Credentials without private key testing prior to usage");
   }
