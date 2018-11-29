@@ -23,10 +23,12 @@ import java.security.PrivateKey;
 public interface CustomKeyExtractor {
 
     /**
+     * Interface for providing a custom method for extracting a private key handler object from a registered provider.
      *
      * @param providerName the name of the specified provider
      * @param alias the alias under which the key is stored
      * @return a PrivateKey handler object
+     * @throws Exception general errors
      */
     PrivateKey getPrivateKey(String providerName, String alias) throws Exception;
 }

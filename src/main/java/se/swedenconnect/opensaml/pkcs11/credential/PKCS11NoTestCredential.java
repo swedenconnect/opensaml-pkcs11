@@ -60,6 +60,8 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *           if no provider for PKCS11 is available
    * @throws IOException
    *           general IO errors
+   * @throws Exception
+   *           general errors
    */
   public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor)
       throws Exception {
@@ -88,6 +90,8 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *           if no provider for PKCS11 is available
    * @throws IOException
    *           general IO errors
+   * @throws Exception
+   *           general errors
    */
   public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin)
       throws Exception {

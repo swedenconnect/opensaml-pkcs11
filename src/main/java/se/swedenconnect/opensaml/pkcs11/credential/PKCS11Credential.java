@@ -67,12 +67,14 @@ public class PKCS11Credential extends BasicX509Credential {
      *
      * @param entityCertificate  The entity certificate for this credential
      * @param providerNameList   The name of the security provider holding the private key object
+     * @param alias             The alias of the private key
      * @param customKeyExtractor A custom function for extracting the private key from the provider
      * @throws UnrecoverableKeyException if the private key can not be recovered
      * @throws NoSuchAlgorithmException  if the selected algorithm is not supported
      * @throws KeyStoreException         general keystore exception
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
+     * @throws Exception                 general errors
      */
     public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor) throws Exception {
         this(entityCertificate, providerNameList, alias, null, customKeyExtractor);
@@ -90,6 +92,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws KeyStoreException         general keystore exception
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
+     * @throws Exception                 general errors
      */
     public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws Exception {
         this(entityCertificate,providerNameList,alias,pin,null);
@@ -108,6 +111,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws KeyStoreException         general keystore exception
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
+     * @throws Exception                 general errors
      */
     private PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin, CustomKeyExtractor customKeyExtractor) throws Exception {
         super(entityCertificate);
@@ -134,6 +138,7 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws KeyStoreException         general keystore exception
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
+     * @throws Exception                 general errors
      */
     private void loadPrivateKey() throws Exception {
         privateKeyMap = new HashMap<>();
