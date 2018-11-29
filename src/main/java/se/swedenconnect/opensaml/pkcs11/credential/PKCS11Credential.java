@@ -60,7 +60,33 @@ public class PKCS11Credential extends BasicX509Credential {
     private String alias;
     private String pin;
     private String currentKeyProvider;
+    private CustomKeyExtractor customKeyExtractor;
 
+
+    /**
+     * Initializes the PKCS#11 credential.
+     *
+     * @param entityCertificate  The entity certificate for this credential
+     * @param providerNameList   The name of the security provider holding the private key object
+     * @param alias              The alias of the private key
+     * @param pin                The pin for the private key
+     * @param customKeyExtractor A custom function for extracting the private key from the provider
+     * @throws UnrecoverableKeyException if the private key can not be recovered
+     * @throws NoSuchAlgorithmException  if the selected algorithm is not supported
+     * @throws KeyStoreException         general keystore exception
+     * @throws NoSuchProviderException   if no provider for PKCS11 is available
+     * @throws IOException               general IO errors
+     */
+    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin, CustomKeyExtractor customKeyExtractor) throws UnrecoverableKeyException,
+            NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+        super(entityCertificate);
+        this.providerNameList = providerNameList;
+        this.alias = alias;
+        this.pin = pin;
+        this.customKeyExtractor = customKeyExtractor;
+        this.loadPrivateKey();
+        LOG.info("Initiated PKCS11 Credential");
+    }
 
     /**
      * Initializes the PKCS#11 credential.
@@ -77,12 +103,7 @@ public class PKCS11Credential extends BasicX509Credential {
      */
     public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws UnrecoverableKeyException,
             NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
-        super(entityCertificate);
-        this.providerNameList = providerNameList;
-        this.alias = alias;
-        this.pin = pin;
-        this.loadPrivateKey();
-        LOG.info("Initiated PKCS11 Credential");
+        this(entityCertificate,providerNameList,alias,pin,null);
     }
 
     /**
@@ -99,9 +120,14 @@ public class PKCS11Credential extends BasicX509Credential {
         privateKeyMap = new HashMap<>();
         for (String providerName : providerNameList) {
             try {
-                KeyStore keyStore = KeyStore.getInstance("PKCS11", providerName);
-                keyStore.load(null, this.pin.toCharArray());
-                PrivateKey privateKey = (PrivateKey) keyStore.getKey(this.alias, this.pin.toCharArray());
+                PrivateKey privateKey = null;
+                if (customKeyExtractor == null){
+                    KeyStore keyStore = KeyStore.getInstance("PKCS11", providerName);
+                    keyStore.load(null, this.pin.toCharArray());
+                    privateKey = (PrivateKey) keyStore.getKey(this.alias, this.pin.toCharArray());
+                } else {
+                    privateKey = customKeyExtractor.getPrivateKey(providerName, alias, pin);
+                }
                 if (privateKey != null) {
                     privateKeyMap.put(providerName, privateKey);
                     LOG.info("Loaded private key from PKCS11 provider: {}, alias: {}", providerName, alias);
