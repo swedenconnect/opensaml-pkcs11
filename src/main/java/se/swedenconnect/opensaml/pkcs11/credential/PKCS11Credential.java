@@ -60,7 +60,23 @@ public class PKCS11Credential extends BasicX509Credential {
     private String alias;
     private String pin;
     private String currentKeyProvider;
+    private CustomKeyExtractor customKeyExtractor;
 
+    /**
+     * Initializes the PKCS#11 credential.
+     *
+     * @param entityCertificate  The entity certificate for this credential
+     * @param providerNameList   The name of the security provider holding the private key object
+     * @param customKeyExtractor A custom function for extracting the private key from the provider
+     * @throws UnrecoverableKeyException if the private key can not be recovered
+     * @throws NoSuchAlgorithmException  if the selected algorithm is not supported
+     * @throws KeyStoreException         general keystore exception
+     * @throws NoSuchProviderException   if no provider for PKCS11 is available
+     * @throws IOException               general IO errors
+     */
+    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor) throws Exception {
+        this(entityCertificate, providerNameList, alias, null, customKeyExtractor);
+    }
 
     /**
      * Initializes the PKCS#11 credential.
@@ -75,12 +91,37 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws UnrecoverableKeyException,
-            NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+    public PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin) throws Exception {
+        this(entityCertificate,providerNameList,alias,pin,null);
+    }
+
+    /**
+     * Initializes the PKCS#11 credential.
+     *
+     * @param entityCertificate  The entity certificate for this credential
+     * @param providerNameList   The name of the security provider holding the private key object
+     * @param alias              The alias of the private key
+     * @param pin                The pin for the private key
+     * @param customKeyExtractor A custom function for extracting the private key from the provider
+     * @throws UnrecoverableKeyException if the private key can not be recovered
+     * @throws NoSuchAlgorithmException  if the selected algorithm is not supported
+     * @throws KeyStoreException         general keystore exception
+     * @throws NoSuchProviderException   if no provider for PKCS11 is available
+     * @throws IOException               general IO errors
+     */
+    private PKCS11Credential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin, CustomKeyExtractor customKeyExtractor) throws Exception {
         super(entityCertificate);
+        if (pin == null && customKeyExtractor == null){
+            LOG.error("A pin or a valid CustomKeyExtractor implementation must be provided");
+            throw new IllegalArgumentException("Null pin and CustomKeyExtractor");
+        }
+        if(customKeyExtractor!=null){
+            LOG.info("Setting up PKCS11 Credential with custom key extractor");
+        }
         this.providerNameList = providerNameList;
         this.alias = alias;
         this.pin = pin;
+        this.customKeyExtractor = customKeyExtractor;
         this.loadPrivateKey();
         LOG.info("Initiated PKCS11 Credential");
     }
@@ -94,17 +135,23 @@ public class PKCS11Credential extends BasicX509Credential {
      * @throws NoSuchProviderException   if no provider for PKCS11 is available
      * @throws IOException               general IO errors
      */
-    private void loadPrivateKey() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
-            NoSuchProviderException, IOException {
+    private void loadPrivateKey() throws Exception {
         privateKeyMap = new HashMap<>();
         for (String providerName : providerNameList) {
             try {
-                KeyStore keyStore = KeyStore.getInstance("PKCS11", providerName);
-                keyStore.load(null, this.pin.toCharArray());
-                PrivateKey privateKey = (PrivateKey) keyStore.getKey(this.alias, this.pin.toCharArray());
+                PrivateKey privateKey = null;
+                if (customKeyExtractor == null){
+                    KeyStore keyStore = KeyStore.getInstance("PKCS11", providerName);
+                    keyStore.load(null, this.pin.toCharArray());
+                    privateKey = (PrivateKey) keyStore.getKey(this.alias, this.pin.toCharArray());
+                } else {
+                    privateKey = customKeyExtractor.getPrivateKey(providerName, alias);
+                }
                 if (privateKey != null) {
                     privateKeyMap.put(providerName, privateKey);
                     LOG.info("Loaded private key from PKCS11 provider: {}, alias: {}", providerName, alias);
+                } else {
+                    LOG.error("Failed to load private key from provider: {}, alias: {}", providerName, alias);
                 }
             } catch (CertificateException e) {
                 LOG.error("Unexpected certificate exception", e);

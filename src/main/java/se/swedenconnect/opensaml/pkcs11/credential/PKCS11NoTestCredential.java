@@ -48,6 +48,34 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *          the name of the security provider holding the private key object
    * @param alias
    *          the alias of the private key
+   * @param customKeyExtractor
+   *          the custom key extractor for extracting the PrivateKey handler object from the providers
+   * @throws UnrecoverableKeyException
+   *           if the private key can not be recovered
+   * @throws NoSuchAlgorithmException
+   *           if the selected algorithm is not supported
+   * @throws KeyStoreException
+   *           general keystore exception
+   * @throws NoSuchProviderException
+   *           if no provider for PKCS11 is available
+   * @throws IOException
+   *           general IO errors
+   */
+  public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, CustomKeyExtractor customKeyExtractor)
+      throws Exception {
+    super(entityCertificate, providerNameList, alias, customKeyExtractor);
+    LOG.info("Initiated PKCS11Credentials without private key testing prior to usage");
+  }
+
+  /**
+   * Initializes the PKCS#11 credential.
+   *
+   * @param entityCertificate
+   *          the entity certificate for this credential
+   * @param providerNameList
+   *          the name of the security provider holding the private key object
+   * @param alias
+   *          the alias of the private key
    * @param pin
    *          the pin for the private key
    * @throws UnrecoverableKeyException
@@ -62,7 +90,7 @@ public class PKCS11NoTestCredential extends PKCS11Credential {
    *           general IO errors
    */
   public PKCS11NoTestCredential(X509Certificate entityCertificate, List<String> providerNameList, String alias, String pin)
-      throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, NoSuchProviderException, IOException {
+      throws Exception {
     super(entityCertificate, providerNameList, alias, pin);
     LOG.info("Initiated PKCS11Credentials without private key testing prior to usage");
   }
