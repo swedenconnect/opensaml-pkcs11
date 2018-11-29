@@ -166,6 +166,25 @@ Example:
                 "alias","1234");
 
 
+Following this example, the default procedure for extracting the private key object from the HSM provider is used. For some implementations of HSM it may be necessary to provide custom code for extracting the private key handler object from the HSM by providing an implementation of the interface `CustomKeyExtractor`.
+
+Example:
+
+    samlMessageSigningCredential = new PKCS11Credential(
+            x509Cert,
+            pkcs11Provider.getProviderNameList(),
+            "alias",
+            new CustomKeyExtractor() {
+                @Override
+                public PrivateKey getPrivateKey(String providerName, String alias) throws Exception {
+                    KeyStore keyStore = KeyStore.getInstance("PKCS11", providerName);
+                    keyStore.load(null, "1234".toCharArray());
+                    return (PrivateKey) keyStore.getKey(alias, "1234".toCharArray());
+                }
+            }
+    );
+
+
 ------
 
 Copyright &copy; 2018, [Sweden Connect](https://swedenconnect.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
