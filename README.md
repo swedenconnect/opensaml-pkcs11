@@ -11,6 +11,12 @@ The process to create a PKCS#11 credential involves 2 steps:
 1. Create PKCS#11 providers for HSM operated keys
 2. Create OpenSAML credentials based on these providers.
 
+--- 
+
+**NOTE:** The opensaml-pkcs11 library will not be ported to support OpenSAML 4. Instead use the [credentials-support](https://github.com/swedenconnect/credentials-support) library.
+
+---
+
 #### Maven and documentation
 
 You can either build the library yourself, or include the following in your POM-file:
