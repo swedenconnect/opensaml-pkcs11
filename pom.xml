@@ -54,7 +54,7 @@
 
     <!-- Versions on dependencies -->
     <opensaml.version>3.4.0</opensaml.version>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
 
   </properties>
 
